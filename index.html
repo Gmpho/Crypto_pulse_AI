@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Crypto Trading Bot</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <script>
+      // Prevents Flash of Unstyled Content (FOUC)
+      (function() {
+        try {
+          const theme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          if (theme === 'dark') {
+            document.documentElement.classList.add('dark');
+          }
+        } catch (e) {
+            console.error('Failed to set initial theme', e);
+        }
+      })();
+    </script>
+    <style>
+      :root {
+        --color-background: #FFFFFF;
+        --color-surface: #F6F8FA;
+        --color-border: #D0D7DE;
+        --color-text-primary: #1F2328;
+        --color-text-secondary: #57606A;
+        --color-blue: #0969DA;
+        --color-blue-light: #2C974B;
+        --color-green: #1F7F33;
+      }
+
+      html.dark {
+        --color-background: #0D1117;
+        --color-surface: #161B22;
+        --color-border: #30363D;
+        --color-text-primary: #C9D1D9;
+        --color-text-secondary: #8B949E;
+        --color-blue: #3B82F6;
+        --color-blue-light: #60A5FA;
+        --color-green: #34D399;
+      }
+
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: var(--color-background);
+        overflow: hidden;
+      }
+      
+      /* Simple scrollbar styling */
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--color-surface);
+      }
+      ::-webkit-scrollbar-thumb {
+        background-color: var(--color-border);
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background-color: var(--color-text-secondary);
+      }
+    </style>
+    <script type="importmap">
+    {
+      "imports": {
+        "@google/genai": "https://aistudiocdn.com/@google/genai@^1.17.0",
+        "react-dom/": "https://aistudiocdn.com/react-dom@^19.1.1/",
+        "recharts": "https://aistudiocdn.com/recharts@^3.1.2",
+        "react/": "https://aistudiocdn.com/react@^19.1.1/",
+        "react": "https://aistudiocdn.com/react@^19.1.1"
+      }
+    }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              'brand-background': 'var(--color-background)',
+              'brand-surface': 'var(--color-surface)',
+              'brand-border': 'var(--color-border)',
+              'brand-text-primary': 'var(--color-text-primary)',
+              'brand-text-secondary': 'var(--color-text-secondary)',
+              'brand-blue': 'var(--color-blue)',
+              'brand-blue-light': 'var(--color-blue-light)',
+              'brand-green': 'var(--color-green)',
+            },
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+            },
+          },
+        },
+      };
+    </script>
+</head>
+<body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+</body>
+</html>
