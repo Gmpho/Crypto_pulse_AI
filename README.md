@@ -64,6 +64,12 @@ Contributions are what make the open-source community such an amazing place to l
 
 Please see our [**Contributing Guide**](./docs/guides/roadmap-and-contributing.md) for more details.
 
+### Architecture Visual
+![Whole Project Architecture](whole project architecture.png)
+
+### Project Visual Demo
+![Project Visual Demo](docs/project visual demo.png)
+
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
