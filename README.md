@@ -23,6 +23,7 @@ This project is documented in the `docs` directory. Here are some key documents 
 -   **[Development Roadmap](./docs/ROADMAP.md)**: The proposed development roadmap and testing strategy.
 -   **[API Reference](./docs/API_REFERENCE.md)**: The proposed API endpoints.
 -   **[Coinbase Integration](./docs/COINBASE_INTEGRATION.md)**: How to integrate Coinbase into the platform.
+-   **[Competitive Analysis](./docs/COMPETITIVE_ANALYSIS.md)**: An analysis of similar platforms in the market.
 
 ## ✨ Key Features
 

@@ -2,77 +2,51 @@
 
 This document outlines the security and compliance patterns for CryptoPulse AI.
 
-## Key Management
+## Secure Key Management
 
-A secure and auditable key management system is critical.
+We enforce strong security for all secrets and keys.
 
-1.  **User Input**: User supplies an exchange key via a secure frontend form. The frontend submits it to the backend over HTTPS. Raw keys are **never** stored in frontend `localStorage`.
-2.  **Encryption**: The backend receives the key and uses a cloud KMS (or Vault) to encrypt it: `ciphertext = KMS.encrypt(plaintext)`.
-3.  **Storage**: The resulting `ciphertext` is stored in the `user_api_keys` table in Supabase.
+*   **Backend-Only Secrets**: Never send private keys to the client. Binance and Gemini keys reside on the server and are fetched from secure storage (e.g., environment variables, a vault).
+*   **Environment & Vaults**: Use `.env` files (not committed to git) or a cloud secret manager (e.g., AWS Secrets Manager, HashiCorp Vault). In Docker, pass secrets via Fly.io secrets.
+*   **Least Privilege**: Create separate API keys per environment (dev, staging, prod). Binance keys should have only trading permissions (withdrawals disabled).
 
-### Runtime Decryption
+### Runtime Decryption & Usage
 
 When an agent needs to place a trade:
 
-1.  The backend calls `KMS.decrypt(ciphertext)` to get the plaintext key in memory.
-2.  The plaintext key is used only in an ephemeral agent tool, then immediately purged from memory.
-3.  All actions are logged to `audit_logs` (without including any key material).
+1.  The backend retrieves the encrypted key from storage.
+2.  It decrypts the key in memory using a service like AWS KMS.
+3.  The plaintext key is used ephemerally by the trading tool and then immediately purged from memory.
+4.  All actions are logged to `audit_logs` without including any key material.
 
-### Key Rotation & Revocation
+## Network Security
 
-Provide an endpoint to rotate keys (re-encrypt) or revoke them (delete from the database and call `KMS.revoke`).
+*   **HTTPS**: All traffic is over HTTPS.
+*   **CORS**: We configure CORS to only allow our frontend origin.
+*   **Rate Limiting**: We use rate limiting and input validation on our FastAPI endpoints to prevent abuse.
 
-### CI/CD Security
+## Threat Modeling (STRIDE)
 
-CI secrets (e.g., Fly.io/KMS tokens) live in GitHub Secrets. No developer machine should hold production keys.
+We apply the STRIDE model to identify and mitigate threats:
 
-### Example KMS Pseudocode
+*   **Spoofing**: A stolen private key could allow an attacker to inject fraudulent orders. 
+    *   **Mitigation**: Store keys encrypted and require 2FA for admin actions. Log all API accesses for audit trails.
+*   **Tampering**: An attacker could tamper with trade data.
+    *   **Mitigation**: Use database-level security (like RLS) and log chained hashes of critical reports to ensure immutability.
+*   **Repudiation**: A user could deny making a trade.
+    *   **Mitigation**: The immutable `audit_logs` provide a clear record of every action taken by a user or an agent.
+*   **Information Disclosure**: A bug could expose user data.
+    *   **Mitigation**: Enforce RLS so users can only see their own data. Run regular security scans (Snyk) to find and fix vulnerabilities.
+*   **Denial of Service**: An attacker could flood the API with requests.
+    *   **Mitigation**: Implement strict rate limiting on all public endpoints.
+*   **Elevation of Privilege**: An attacker could gain admin access.
+    *   **Mitigation**: Enforce the principle of least privilege on all API keys and user roles. Secure admin endpoints with 2FA.
 
-Example Python (pseudo) for storing & decrypting using an AWS KMS-like API:
+## LLM Safety
 
-```python
-from aws_kms import KMSClient
-kms = KMSClient()
+The AI assistant is guided to perform analysis only—it “reasons” and suggests trades but requires explicit user sign-off. We strictly sanitize user inputs in prompts and disable open-ended code execution. The function-calling interface itself prevents the LLM from inventing unauthorized actions.
 
-def store_user_key(user_id, provider, raw_key):
-    ciphertext = kms.encrypt(raw_key)
-    supabase.table('user_api_keys').insert({...,'key_ciphertext':ciphertext})
+## Compliance
 
-def use_key_and_place_order(api_key_row):
-    raw_key = kms.decrypt(api_key_row['key_ciphertext'])  # in memory
-    try:
-        client = BinanceClient(api_key=raw_key['api_key'], secret=raw_key['secret'])
-        res = client.create_order(...)
-    finally:
-        zero_memory(raw_key)  # best-effort zeroization
-```
-
-## Fraud Detection & Anomaly Architecture
-
--   **Data Sources**: Incoming trades, failed API calls, user login history, deposit/withdrawal patterns.
--   **Fast Rules Engine (First Line)**: Immediate flags for threshold breaches (e.g., order > X USD) and blacklisted IPs.
--   **ML/LLM Anomaly Detector (Second Line)**: Use RAG and embeddings. Feed the last N trades and user profile into an LLM to create an anomaly score. A supervised model over historic labeled fraud data can also be used for a scoring model (optional).
--   **Response**: If `anomaly_score > threshold`, mark it as an anomaly, quarantine user actions (pause autonomous mode), notify the operator, and require manual review.
--   **Human Review UI**: Anomaly page with evidence and LLM-suggested rationale for reviewers to accept/reject. Reviews are marked in `audit_logs`.
-
-## Compliance & Continuous Audit
-
--   **Immutable Logs**: Keep an immutable `audit_logs` row for every decision and action: who (agent or user), what (order id), why (LM summary), evidence (tool outputs), and timestamp. This creates traceability for regulatory requests.
--   **Automated Compliance Agent**: A background `compliance_agent` periodically runs `match_regulation` for each user region and posts exceptions.
--   **Reporting**: Provide downloadable CSV/PDF audit reports for regulators. Include chained hashes (optionally on-chain) to prove immutability for critical reports.
-
-## Region-Specific Regulatory Checklist
-
--   **US**: AML/KYC needed for fiat/custodial services. Advise KYC for high-dollar users even if non-custodial. Retain audit logs.
--   **EU**: Adhere to MiFID II (algorithmic trading rules, kill switch). Prepare for the EU AI Act (classify agents as high-risk). Comply with GDPR (PII controls, data subject rights).
--   **Africa (including South Africa)**: Rules are variable (check FSCA, NCA). Implement region-specific compliance plugins. Follow FATF guidance for AML/KYC for larger accounts.
-
-## Coinbase Integration Security
-
--   **No Secret Logging**: Never log secret key material or include raw keys in audit logs. Log only order IDs, metadata, tool results, and LLM rationales.
--   **KMS/Vault**: Encrypt/decrypt keys using KMS/Vault. Store ciphertext in Supabase, decrypt on-demand, and purge.
--   **RLS**: Use Row Level Security on Supabase tables so users can only read their own keys/trades.
--   **2FA/MFA**: Require 2FA/MFA for large trades.
--   **Sandbox**: Use the Coinbase sandbox or testnet for development and CI integration tests.
--   **Rate Limiting**: Implement retry logic; Coinbase rate limits can be strict, so handle 429 errors gracefully.
--   **Audit Trails**: Store `audit_logs` for every agent decision and trade action.
+*   **Audit Logs**: If deployed commercially, we will add KYC/AML controls. The detailed, immutable `audit_logs` are designed to support compliance and regulatory requests.
+*   **GDPR/Regional Laws**: For EU users, we will ensure GDPR compliance (PII controls, data subject rights). The architecture is designed to be adaptable to regional data residency requirements.

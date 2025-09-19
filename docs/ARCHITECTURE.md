@@ -2,29 +2,36 @@
 
 This document outlines the system architecture for CryptoPulse AI, designed to be a full-stack finance agent platform.
 
-## High-Level Summary
+## Overview
 
-Extend CryptoPulse AI into a full-stack finance agent platform by adding Supabase AI + vector search, event-streaming, compliance/fraud tooling, and specialized LangChain tools so LLM agents can (1) detect fraud & anomalies in realtime, (2) generate compliance audits and reports, (3) perform automated portfolio management, while keeping keys secure, auditable, and regionally compliant.
+We propose a modern, AI-driven cryptocurrency trading platform that couples a React/TypeScript frontend with a Python FastAPI backend running LLM-based agents (via LangChain) to analyze markets and execute trades. The frontend dashboard (CryptoPulse AI) presents real-time charts and an AI chat assistant; the backend handles data aggregation, LLM reasoning (Google Gemini), and secure order execution.
 
-## Major Architectural Additions
+### Key Attributes:
 
--   **Supabase AI + pgvector**: Store embeddings for news, audit logs, policy docs and use RAG for LLM context (regulatory rules, past trades, explanations).
--   **Streaming & Event Layer**: WebSocket or message broker (Redis Streams, RabbitMQ) to capture every trade event, webhook and LLM tool call for real-time detection and audit.
--   **Fraud & Anomaly Service**: Lightweight rules engine + LLM anomaly detector (uses behavioral baselines + embeddings + supervised signals).
--   **Compliance & Continuous Audit Module**: Background agent that compares transactions vs. applicable policies and writes exception rationales to `audit_logs`.
--   **Strategy Execution Sandbox & Gating**: Multi-tier modes: `DRY_RUN`, `MANUAL_CONFIRM`, `AUTONOMOUS` with operator gating and `MAINNET_ENABLE` boolean.
--   **Secrets / KMS**: Move all keys into KMS/Vault, store only ciphertext in Supabase; decrypt at runtime in memory only.
--   **Observability & Alerts**: Sentry + Prometheus metrics for latency, order failures, anomaly rate; Slack/Discord alerts for critical exceptions.
+*   **Hybrid Python–TypeScript Stack**: React + Tailwind CSS on the client; Python (FastAPI) for AI and trading logic. This separation lets us leverage Python’s AI ecosystem while providing a responsive web UI.
+*   **LLM Integration**: We use Google’s Gemini API (via Google AI Studio) for large-context market analysis, with fallbacks to open models (Ollama/OpenRouter) for resiliency.
+*   **Secure Key Management**: All API keys are stored only on the server side, encrypted at rest or in a vault.
+*   **Cloud Deployment & CI/CD**: Services are containerized (Docker) and deployed on Fly.io for global low-latency delivery. GitHub Actions pipelines handle linting, testing, security scans, and automated deployment.
+*   **Observability & Security**: We integrate Sentry for error/performance monitoring and follow best practices like rate limits and audit logs.
 
-## Supabase Integration
+## High-Level Architecture
 
-Supabase will be used for Auth, Postgres, Realtime, and pgvector.
+The system has two tiers: a **Client** (React/TS dashboard) and a **Server** (Python API + agents).
 
--   **Auth**: Supabase Auth (JWT) for users. Use RLS policies for per-user isolation.
--   **Data**: Postgres tables for `users`, `api_keys` (ciphertext), `trades`, `audit_logs`, `anomalies`, `embeddings`.
--   **Vector Search**: `pgvector` for news embeddings, past reports, to support RAG for agents.
--   **Edge Functions (optional)**: Small serverless functions to validate webhooks or pre-process data before inserting into Postgres.
--   **Realtime**: Supabase Realtime to push trade & agent events to the frontend or ops channels.
+*   **AI Chat Agent (Backend)**: A Python service that uses LangChain’s `AgentExecutor` to give the LLM access to tools for market tasks.
+*   **Market Data Services**: Python modules that fetch cryptocurrency prices (e.g., CoinGecko) and news (e.g., CryptoCompare). These services implement circuit breakers and caching.
+*   **Exchange Interface**: A secure wrapper (e.g., CCXT) for exchange APIs like Binance to handle trades.
+*   **Data & Auth (Supabase)**: We use Supabase (Postgres) for user and session data. Supabase Auth issues JWTs and enforces Row-Level Security (RLS).
+*   **Infrastructure & CI/CD**: Components run in Docker. GitHub Actions automates testing, scanning, building, and deployment to Fly.io.
+
+## Data and API Integration
+
+We aggregate data from multiple sources:
+
+*   **Price Data**: CoinGecko and exchange APIs for live and historical prices (OHLCV).
+*   **News & Social Feeds**: CryptoCompare News API, RSS feeds, or Twitter for market news.
+*   **Exchange (Binance)**: The Binance spot API powers order execution and account queries. We also monitor Binance’s websockets for real-time fill/status updates.
+*   **Database (Supabase/Postgres)**: All persistent data lives in a Postgres DB, including user profiles, chat transcripts, trade history, and configurations.
 
 ## Database Schema
 
@@ -100,8 +107,6 @@ create table embeddings (
 ```
 
 ### Row Level Security (RLS) Example
-
-Allow users to only access their own rows.
 
 ```sql
 -- example RLS for trades
