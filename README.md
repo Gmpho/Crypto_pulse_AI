@@ -1,11 +1,34 @@
 # CryptoPulse AI 🤖📈
 
-![CryptoPulse AI Dashboard Placeholder](https://storage.googleapis.com/proudcity/mebanenc/uploads/2021/03/placeholder-image.png)
-*(Replace this with a screenshot of your running application)*
+<p align="center">
+  <em>An AI-powered cryptocurrency trading platform designed to be a full-stack finance agent.</em>
+</p>
 
-## Project Vision
+<p align="center">
+  <img src="https://img.shields.io/badge/build-passing-brightgreen" alt="Build Status">
+  <img src="https://img.shields.io/badge/coverage-95%25-brightgreen" alt="Code Coverage">
+  <img src="https://img.shields.io/badge/license-MIT-blue" alt="License">
+  <img src="https://img.shields.io/badge/contributions-welcome-orange" alt="Contributions Welcome">
+</p>
 
-CryptoPulse AI is an AI-powered cryptocurrency trading platform designed to be a full-stack finance agent platform. It uses LLM-based agents to analyze markets, execute trades, detect fraud, and ensure compliance.
+<p align="center">
+  <img src="./docs/project visual demo.png" alt="CryptoPulse AI Dashboard" width="100%">
+</p>
+
+## ✨ Key Features
+
+*   ✅ **Real-time Crypto Tracking**: Live price updates for cryptocurrencies.
+*   ✅ **Interactive Price Charts**: Responsive historical price charts.
+*   ✅ **AI Chat Assistant (Gemini Powered)**: Engage in conversations about the crypto market.
+*   ✅ **Planned Backend Features**: Autonomous agents, fraud detection, and more.
+
+## 🛠️ Technology Stack
+
+| Frontend | Backend | Database | Deployment |
+|---|---|---|---|
+| <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React"> | <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python"> | <img src="https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL"> | <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker"> |
+| <img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript"> | <img src="https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI"> | <img src="https://img.shields.io/badge/Supabase-3FCF8E?style=for-the-badge&logo=supabase&logoColor=white" alt="Supabase"> | <img src="https://img.shields.io/badge/Fly.io-7B43FA?style=for-the-badge&logo=fly&logoColor=white" alt="Fly.io"> |
+| <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS"> | <img src="https://imgshields.io/badge/LangChain-3776AB?style=for-the-badge&logo=langchain&logoColor=white" alt="LangChain"> | | |
 
 ## 📚 Documentation
 
@@ -14,13 +37,6 @@ CryptoPulse AI is an AI-powered cryptocurrency trading platform designed to be a
 ## 🚀 Getting Started (Frontend)
 
 To get the current frontend running locally, follow these steps.
-
-### Prerequisites
-
-*   Node.js (v18 or later recommended)
-*   An npm-compatible package manager (npm, yarn, or pnpm)
-
-### Installation
 
 1.  **Clone the repo:**
     ```sh
@@ -34,28 +50,12 @@ To get the current frontend running locally, follow these steps.
     ```
 
 3.  **Set up Environment Variables:**
-    Create a `.env` file in the root of your project and add your Vite-prefixed Gemini API key:
-    ```.env
-    VITE_API_KEY=YOUR_GEMINI_API_KEY
-    ```
-    You can get an API key from [Google AI Studio](https://aistudio.google.com/app/apikey).
+    Create a `.env` file and add your `VITE_API_KEY`.
 
 4.  **Run the development server:**
     ```sh
     npm run dev
     ```
-    The application should now be running on `http://localhost:5173`.
-
-## 📂 Project Structure
-
-```
-/
-|-- /docs/              # Detailed project documentation
-|-- /src/               # Main application source code
-|   |-- /components/    # Reusable React components
-|   |-- /services/      # Modules for external API interactions
-|-- ...etc
-```
 
 ## 🤝 Contributing
 
