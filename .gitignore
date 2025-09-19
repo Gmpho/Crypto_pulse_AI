@@ -1,5 +1,13 @@
-# Logs
-logs
+#===========================================================================
+# General
+#===========================================================================
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Log files
+logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
@@ -7,23 +15,101 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
-
-# Editor directories and files
+# IDE-specific files
+.idea/
+*.sublime-project
+*.sublime-workspace
 .vscode/*
 !.vscode/extensions.json
-.idea
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
 
-.gemini/
-gha-creds-*.json
-.gemini
+# Sensitive information
+.env
+.env.local
+.env.*.local
+*.env
+*.key
+*.pem
 
+#===========================================================================
+# Frontend (React / Vite)
+#===========================================================================
+
+# Dependencies
+node_modules/
+
+# Build artifacts
+dist/
+dist-ssr/
+build/
+coverage/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Other
+.cache/
+.temp/
+
+#===========================================================================
+# Backend (Python / FastAPI)
+#===========================================================================
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Distribution / packaging
+.Python
+develop-eggs/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+*.manifest
+*.spec
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+.env/
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.pytest_cache/
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# pyflow
+__pypackages__/
+
+# FastAPI specific
+*.pid
+instance/
+.webassets-cache
