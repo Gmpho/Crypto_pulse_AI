@@ -65,10 +65,10 @@ Contributions are what make the open-source community such an amazing place to l
 Please see our [**Contributing Guide**](./docs/guides/roadmap-and-contributing.md) for more details.
 
 ### Architecture Visual
-<img src="c:/Users/giftm/crypto pulse AI/Crypto_pulse_AI/whole project architecture.png" alt="Whole Project Architecture" width="100%">
+![Whole Project Architecture](whole-project-architecture.png)
 
 ### Project Visual Demo
-<img src="c:/Users/giftm/crypto pulse AI/Crypto_pulse_AI/docs/project visual demo.png" alt="Project Visual Demo" width="100%">
+<img src="./docs/project-visual-demo.png" alt="Project Visual Demo" width="100%"><br>
 
 ## 📄 License
 
