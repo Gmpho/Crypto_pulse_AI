@@ -53,6 +53,22 @@ CryptoPulse AI is a modern, AI-driven cryptocurrency trading platform. It couple
 
 ```
 
+## Visual Architecture Diagrams
+
+Below are some additional diagrams illustrating the project architecture.
+
+### Architecture Design 1
+
+![Architecture Design 1](../Argtecture design1.png)
+
+### Project Architecture 2
+
+![Project Architecture 2](../project achitecture2.png)
+
+### Project Architecture 3
+
+![Project Architecture 3](../project architecture3.png)
+
 ## Components
 
 ### Frontend
