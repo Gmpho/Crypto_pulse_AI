@@ -30,3 +30,7 @@ If you're new to the project, here's how to get started:
 ### Architectural Decision Records (ADRs)
 
 *   **[ADRs](./adr/README.md)**: A log of significant architectural decisions made during the project's development.
+
+### References
+
+*   **[References](./references.md)**: A list of the external resources and articles that have informed the project's design.
