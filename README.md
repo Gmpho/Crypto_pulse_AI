@@ -1,7 +1,7 @@
 # CryptoPulse AI 🤖📈
 
 <p align="center">
-  <em>An AI-powered cryptocurrency trading platform designed to be a full-stack finance agent.</em>
+  <em>An AI-powered, full-stack finance agent for the cryptocurrency market.</em>
 </p>
 
 <p align="center">
@@ -11,16 +11,36 @@
   <img src="https://img.shields.io/badge/contributions-welcome-orange" alt="Contributions Welcome">
 </p>
 
-<p align="center">
-  <img src="./docs/project visual demo.png" alt="CryptoPulse AI Dashboard" width="100%">
-</p>
+## 🚀 Demos
 
-## ✨ Key Features
+### Investor Demo
 
-*   ✅ **Real-time Crypto Tracking**: Live price updates for cryptocurrencies.
-*   ✅ **Interactive Price Charts**: Responsive historical price charts.
-*   ✅ **AI Chat Assistant (Gemini Powered)**: Engage in conversations about the crypto market.
-*   ✅ **Planned Backend Features**: Autonomous agents, fraud detection, and more.
+> **Note to User:** Your video will be here. Please upload `Investor Demo.mp4` to a service like YouTube or Vimeo. Then, replace this text with the markdown for a clickable thumbnail. 
+> 
+> **Example Markdown:** `[![Watch the investor demo](https://img.youtube.com/vi/YOUR_VIDEO_ID/0.jpg)](https://www.youtube.com/watch?v=YOUR_VIDEO_ID)`
+
+This demo provides a high-level overview of CryptoPulse AI for investors, showcasing its core features, market potential, and the vision for the future of AI-driven trading.
+
+### Investor Demo 2
+
+> **Note to User:** Your second video will be here. Please upload `investor Demo2.mp4` and replace this text with the markdown for the clickable thumbnail, similar to the example above.
+
+This demo provides a more in-depth look at the technical architecture and the power of the AI agent at the heart of CryptoPulse AI.
+
+## 🤔 Why CryptoPulse AI?
+
+CryptoPulse AI is not just another trading bot. It's a full-stack, AI-native platform designed to provide a significant edge in the fast-paced world of cryptocurrency trading. Here's what sets it apart:
+
+*   **AI-Powered Insights**: At its core, CryptoPulse AI uses a powerful LLM-based agent to analyze market data, sentiment, and technical indicators, providing insights that go beyond traditional charting tools.
+*   **Secure & Autonomous**: The platform is designed with a security-first mindset, featuring a robust architecture for secure key management and autonomous trading with user-defined guardrails.
+*   **Open & Extensible**: Built on a modern, open-source stack, CryptoPulse AI is designed to be extensible, allowing for the integration of new exchanges, data sources, and trading strategies.
+
+## ✨ Features
+
+*   **Real-time Market Analysis**: Live price tracking, interactive charts, and a dynamic news feed.
+*   **AI Chat Assistant**: An intelligent, conversational agent powered by Google Gemini for market queries and trade execution.
+*   **Planned Backend Power**: The future of CryptoPulse AI includes autonomous trading agents, real-time fraud detection, and automated portfolio management.
+*   **Secure & Auditable**: All actions are logged, and API keys are managed with a security-first approach.
 
 ## 🛠️ Technology Stack
 
@@ -34,29 +54,16 @@
 
 **For a complete overview of the project, including architecture, concepts, and guides, please see our [full documentation](./docs/README.md).**
 
-## 🚀 Getting Started (Frontend)
+## 🚀 Getting Started
 
-To get the current frontend running locally, follow these steps.
-
-1.  **Clone the repo:**
-    ```sh
-    git clone https://github.com/Gmpho/Crypto-pulse-Ai.git
-    cd Crypto-pulse-Ai
-    ```
-
-2.  **Install dependencies:**
-    ```sh
-    npm install
-    ```
-
-3.  **Set up Environment Variables:**
-    Create a `.env` file and add your `VITE_API_KEY`.
-
-4.  **Run the development server:**
-    ```sh
-    npm run dev
-    ```
+To get the current frontend running locally, follow the instructions in our [**Getting Started Guide**](./docs/getting-started.md).
 
 ## 🤝 Contributing
 
-Contributions are greatly appreciated. Please see our [contributing guide](./docs/guides/roadmap-and-contributing.md) for more details.
+Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+
+Please see our [**Contributing Guide**](./docs/guides/roadmap-and-contributing.md) for more details.
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
