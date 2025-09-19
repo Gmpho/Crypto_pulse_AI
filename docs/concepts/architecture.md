@@ -59,15 +59,20 @@ Below are some additional diagrams illustrating the project architecture.
 
 ### Architecture Design 1
 
-![Architecture Design 1](../Argtecture design1.png)
+<img src="../Argtecture design1.png" alt="Architecture Design 1" width="100%">
+
+<br>
 
 ### Project Architecture 2
 
-![Project Architecture 2](../project achitecture2.png)
+<img src="../project achitecture2.png" alt="Project Architecture 2" width="100%">
+
+<br>
 
 ### Project Architecture 3
 
-![Project Architecture 3](../project architecture3.png)
+<img src="../project architecture3.png" alt="Project Architecture 3" width="100%">
+
 
 ## Components
 
