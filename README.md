@@ -1,43 +1,71 @@
 # CryptoPulse AI 🤖📈
 
-A modern, AI-powered dashboard for cryptocurrency market analysis and insights. This application provides real-time data, advanced charting, and an intelligent chat assistant powered by Google's Gemini API to help users make informed trading decisions.
-
-*Note: This is a frontend application demonstration and does not connect to real trading backends.*
-
 ![CryptoPulse AI Dashboard Placeholder](https://storage.googleapis.com/proudcity/mebanenc/uploads/2021/03/placeholder-image.png)
 *(Replace this with a screenshot of your running application)*
 
+## Project Vision
+
+CryptoPulse AI is evolving into a full-stack finance agent platform. It leverages Supabase AI, vector search, event-streaming, and specialized LangChain tools to enable AI agents to:
+
+1.  Detect fraud and anomalies in real-time.
+2.  Generate compliance audits and reports.
+3.  Perform automated portfolio management.
+
+All while keeping keys secure, auditable, and regionally compliant.
+
+## 📚 Documentation
+
+This project is documented in the `docs` directory. Here are some key documents to get you started:
+
+-   **[System Architecture](./docs/ARCHITECTURE.md)**: The high-level architecture, Supabase integration, and database schemas.
+-   **[AI Agent Design](./docs/AGENT_DESIGN.md)**: The design of the LangChain-powered AI agents.
+-   **[Security and Compliance](./docs/SECURITY.md)**: The security and compliance patterns.
+-   **[Development Roadmap](./docs/ROADMAP.md)**: The proposed development roadmap and testing strategy.
+-   **[API Reference](./docs/API_REFERENCE.md)**: The proposed API endpoints.
+-   **[Coinbase Integration](./docs/COINBASE_INTEGRATION.md)**: How to integrate Coinbase into the platform.
+
 ## ✨ Key Features
 
-*   **Real-time Crypto Tracking:** Live price updates for cryptocurrencies (Bitcoin is pre-configured), with visual feedback on price changes.
-*   **Interactive Price Charts:** Responsive historical price charts from `recharts` with multiple timeframes (1H, 1D, 1W, 1M).
-*   **AI Chat Assistant (Gemini Powered):**
-    *   Engage in conversations about the crypto market.
-    *   Generate in-depth technical and fundamental analysis for any crypto.
-    *   Toggle on **Web Search** for grounded, up-to-the-minute answers on market events.
-    *   Full chat history management (create, select, delete sessions), saved locally in your browser.
-*   **Latest News Feed:** An integrated feed of the latest news from the crypto world, fetched from the CryptoCompare API.
-*   **Robust Data Fetching:**
-    *   Resilient data fetching from CoinGecko & CryptoCompare APIs.
-    *   Features a circuit-breaker, CORS proxy rotation, and mock data fallbacks to ensure high availability and a smooth user experience even with network issues.
-*   **Price Alerts:** Set custom price alerts for your favorite assets and get notified within the app.
-*   **Wallet Integration:** A clean modal to simulate connecting/disconnecting various wallets and platforms (MetaMask, Binance, etc.).
-*   **Modern & Responsive UI:**
-    *   Sleek, responsive design built with Tailwind CSS.
-    *   Includes a beautiful **Dark/Light mode** theme toggle.
-    *   Custom toast notifications for user feedback.
+### Current Frontend Features:
+
+*   **Real-time Crypto Tracking:** Live price updates for cryptocurrencies.
+*   **Interactive Price Charts:** Responsive historical price charts.
+*   **AI Chat Assistant (Gemini Powered):** Engage in conversations about the crypto market.
+*   **Latest News Feed:** An integrated feed of the latest crypto news.
+*   **Price Alerts:** Set custom price alerts.
+*   **Wallet Integration Simulation:** A modal to simulate connecting various wallets.
+*   **Modern & Responsive UI:** Built with Tailwind CSS, including a Dark/Light mode.
+
+### Planned Backend Features:
+
+*   **Full-Stack Financial Agents:** Autonomous agents for trading and analysis.
+*   **Real-time Fraud Detection:** Anomaly detection on transactions.
+*   **Automated Portfolio Management:** AI-driven investment strategies.
+-   **Continuous Audit & Compliance:** Automated compliance checks and reporting.
+*   **Secure Key Management:** Using KMS/Vault for API key storage.
+*   **Multi-Exchange Support:** Starting with Binance and Coinbase.
 
 ## 🛠️ Tech Stack
 
-*   **Frontend:** React, TypeScript
+### Frontend:
+
+*   **Framework:** React, TypeScript
 *   **Styling:** Tailwind CSS
 *   **Charting:** Recharts
 *   **AI:** Google Gemini API (`@google/genai`)
 *   **Data Sources:** CoinGecko API, CryptoCompare API
 
-## 🚀 Getting Started
+### Backend (Planned):
 
-To get a local copy up and running, follow these simple steps.
+*   **Framework:** Python (FastAPI)
+*   **AI/Agents:** LangChain
+*   **Database:** Supabase (Postgres + pgvector)
+*   **Security:** Cloud KMS / HashiCorp Vault
+*   **Infrastructure:** Fly.io (or similar)
+
+## 🚀 Getting Started (Frontend)
+
+To get the current frontend running locally, follow these steps.
 
 ### Prerequisites
 
@@ -58,49 +86,35 @@ To get a local copy up and running, follow these simple steps.
     ```
 
 3.  **Set up Environment Variables:**
-    The application requires a Google Gemini API key to power the AI chat features. Without it, the chat will run in a mock mode with pre-programmed responses.
-
-    *   Create a `.env` file in the root of your project.
-    *   Add your Gemini API key to this file. **Note:** Since this is a client-side application, the environment variable needs to be prefixed (e.g., `VITE_` for Vite projects) to be exposed to the browser. Let's assume a Vite setup:
-        ```.env
-        VITE_API_KEY=YOUR_GEMINI_API_KEY
-        ```
-    *   You can get an API key from [Google AI Studio](https://aistudio.google.com/app/apikey).
+    Create a `.env` file in the root of your project and add your Vite-prefixed Gemini API key:
+    ```.env
+    VITE_API_KEY=YOUR_GEMINI_API_KEY
+    ```
+    You can get an API key from [Google AI Studio](https://aistudio.google.com/app/apikey).
 
 4.  **Run the development server:**
-    *If you are using Vite:*
     ```sh
     npm run dev
     ```
-    The application should now be running on `http://localhost:5173` (or a similar port).
+    The application should now be running on `http://localhost:5173`.
 
 ## 📂 Project Structure
 
-The project is organized into a logical and scalable structure:
-
 ```
 /
-|-- /components/      # Reusable React components
-|   |-- /icons/       # SVG icon components
-|   |-- App.tsx       # Main application component and state orchestrator
-|   |-- Chart.tsx     # Price chart component
-|   |-- ChatPanel.tsx # Main AI chat interface
-|   |-- ...etc
-|-- /services/        # Modules for external API interactions
-|   |-- coingeckoService.ts # CoinGecko API logic with circuit breaker
-|   |-- geminiService.ts    # Google Gemini API logic
-|   |-- newsService.ts      # CryptoCompare News API logic with circuit breaker
-|-- types.ts          # Centralized TypeScript type definitions
-|-- constants.ts      # Mock data and shared constants
-|-- index.tsx         # Main React entry point
-|-- index.html        # The main HTML file
+|-- /docs/              # Detailed project documentation
+|-- /components/        # Reusable React components
+|   |-- /icons/         # SVG icon components
+|-- /services/          # Modules for external API interactions
+|-- App.tsx             # Main application component
+|-- types.ts            # Centralized TypeScript type definitions
+|-- constants.ts        # Mock data and shared constants
+|-- ...etc
 ```
 
 ## 🤝 Contributing
 
-Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
-
-If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
+Contributions are greatly appreciated. Please fork the repo and create a pull request.
 
 1.  Fork the Project
 2.  Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
