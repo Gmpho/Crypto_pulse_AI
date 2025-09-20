@@ -157,4 +157,24 @@ jobs:
         args: "deploy --config fly.production.toml"
       env:
         FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
-```
+
+## Gemini AI Workflows
+
+Our CI/CD pipeline is enhanced with a suite of AI-powered workflows that use Gemini to automate various development tasks.
+
+### Workflow Overview
+
+These workflows are defined in the `.github/workflows` directory and work together to provide a seamless AI-assisted development experience.
+
+*   **`gemini-dispatch.yml`**: This workflow acts as the central dispatcher for all AI-related tasks. It is triggered by events like new pull requests, issues, or comments, and it routes the request to the appropriate workflow based on the command or event type.
+*   **`gemini-invoke.yml`**: This is the core workflow for executing AI tasks. It runs the Gemini CLI with a specific prompt and context, allowing the AI to perform a wide range of tasks, from answering questions to generating code.
+*   **`gemini-review.yml`**: This workflow automates the code review process. When a new pull request is opened, this workflow is triggered, and the AI reviews the code for correctness, security, and style.
+*   **`gemini-triage.yml`**: This workflow helps to manage issues by automatically triaging them. When a new issue is created, the AI analyzes it and applies the appropriate labels.
+*   **`gemini-scheduled-triage.yml`**: This workflow runs on a schedule to find any untriaged issues and then triggers the `gemini-triage.yml` workflow to triage them.
+
+### Benefits
+
+*   **Automation:** These workflows automate repetitive tasks like code review and issue triage, freeing up developers to focus on more creative and strategic work.
+*   **Improved Code Quality:** By providing automated code reviews, the AI can help to identify potential issues early in the development process, leading to higher-quality code.
+*   **Faster Development Cycles:** The automated workflows and instant feedback help to speed up the development process.
+*   **AI-Powered Assistance:** Developers can interact with the AI directly in their pull requests and issues to get help with a wide range of tasks.

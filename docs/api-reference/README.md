@@ -2,32 +2,35 @@
 
 This document provides a reference for the proposed API endpoints for CryptoPulse AI.
 
-## Example Endpoints (OpenAPI Style)
+## Authentication
 
-This is the minimal set of proposed endpoints.
+### `POST /api/auth/siwe/nonce`
 
--   `POST /v1/keys`
-    -   **Description**: Store a user's exchange API key. The backend encrypts the key before storage.
-    -   **Body**: `{ "provider": "binance", "key": "...", "secret": "..." }`
+*   **Description**: Get a nonce for Sign-In with Ethereum (SIWE) authentication.
+*   **Returns**: `{ "nonce": "..." }`
 
--   `GET /v1/trades`
-    -   **Description**: List the current user's trades. Access is controlled by RLS.
+### `POST /api/auth/siwe/verify`
 
--   `POST /v1/agent/query`
-    -   **Description**: Send a query to the AI agent.
-    -   **Body**: `{ "query": "Buy 0.1 BTC" }`
-    -   **Returns**: A structured action, tool logs, and confidence score. See the example response below.
+*   **Description**: Verify the SIWE message and create a session.
+*   **Body**: `{ "message": "...", "signature": "..." }`
+*   **Returns**: `{ "address": "..." }`
 
--   `POST /v1/trade/confirm`
-    -   **Description**: Confirm a trade that was proposed by the agent when in `MANUAL_CONFIRM` mode.
-    -   **Body**: `{ "trade_id": "..." }`
+## Agent
 
--   `POST /v1/admin/pause_trading`
-    -   **Description**: Operator-only endpoint to act as a kill switch to pause all trading activity.
+### `POST /api/agent/query`
 
-## Example Agent Query Response
+*   **Description**: Send a query to the AI agent.
+*   **Body**:
+    ```json
+    {
+      "user_id": "...",
+      "prompt": "Buy 0.1 BTC",
+      "dry_run": true
+    }
+    ```
+*   **Returns**: A structured action, tool logs, and confidence score. See the example response below.
 
-An example response from the `POST /v1/agent/query` endpoint:
+**Example Agent Query Response**
 
 ```json
 {
@@ -48,3 +51,18 @@ An example response from the `POST /v1/agent/query` endpoint:
   "audit_hint": "signal based on MA crossover and negative sentiment decline"
 }
 ```
+
+## Exchange
+
+### `POST /api/exchange/link`
+
+*   **Description**: Link a user's exchange account.
+*   **Body**: `{ "provider": "binance", "key": "...", "secret": "..." }`
+
+## Transactions
+
+### `POST /api/tx/notify`
+
+*   **Description**: Notify the backend of a new transaction.
+*   **Body**: `{ "tx_hash": "..." }`
+

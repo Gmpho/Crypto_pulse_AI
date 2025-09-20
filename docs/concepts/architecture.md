@@ -7,7 +7,7 @@ This document outlines the system architecture for CryptoPulse AI, designed to b
 The system has three layers: 
 
 *   **Frontend (TypeScript/React)**: A chat/dash- board UI (browser or mobile app) where users speak
-or type commands, see text responses, and view charts or alerts. We use React (or Next.js) for
+or type commands, see text responses, and view charts or alerts. We use React (with Vite) for
 performance and flexibility. The UI supports voice I/O (via Web Audio and Text-to-Speech), a
 conversation view, and embeds images (charts) in chat. For rapid prototyping we might start
 with Gradio/Streamlit, but production uses React or React Native . 

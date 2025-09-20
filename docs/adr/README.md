@@ -9,3 +9,6 @@ An Architectural Decision Record (ADR) is a document that captures an important 
 ## ADR Log
 
 *   [ADR 001: Choice of Core Technology Stack](./001-choice-of-tech-stack.md)
+*   [ADR-002: Choice of Model Context Protocol (MCP)](./002-choice-of-model-context-protocol.md)
+*   [ADR-003: Security and Key Management Strategy](./003-security-and-key-management-strategy.md)
+*   [ADR-004: Multi-LLM Strategy](./004-multi-llm-strategy.md)
