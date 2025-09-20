@@ -2,28 +2,44 @@
 
 This document outlines the security and compliance patterns for CryptoPulse AI.
 
-## Secure Key Management
+## Security and Key Management
 
-We enforce strong security for all secrets and keys.
+Security is paramount in crypto. We implement zero-trust, least-privilege practices for all keys and
+secrets:
 
-*   **Backend-Only Secrets**: Never send private keys to the client. Binance and Gemini keys reside on the server and are fetched from secure storage (e.g., environment variables, a vault).
-*   **Environment & Vaults**: Use `.env` files (not committed to git) or a cloud secret manager (e.g., AWS Secrets Manager, HashiCorp Vault). In Docker, pass secrets via Fly.io secrets.
-*   **Least Privilege**: Create separate API keys per environment (dev, staging, prod). Binance keys should have only trading permissions (withdrawals disabled).
-
-### Runtime Decryption & Usage
-
-When an agent needs to place a trade:
-
-1.  The backend retrieves the encrypted key from storage.
-2.  It decrypts the key in memory using a service like AWS KMS.
-3.  The plaintext key is used ephemerally by the trading tool and then immediately purged from memory.
-4.  All actions are logged to `audit_logs` without including any key material.
-
-## Network Security
-
-*   **HTTPS**: All traffic is over HTTPS.
-*   **CORS**: We configure CORS to only allow our frontend origin.
-*   **Rate Limiting**: We use rate limiting and input validation on our FastAPI endpoints to prevent abuse.
+*   **Key Storage**: All sensitive keys (exchange API secrets, database passwords, encryption keys) are
+stored in a dedicated secrets manager or HSM. For example, using AWS Secrets Manager or
+HashiCorp Vault ensures keys are encrypted at rest and only available to the running service. We
+never hard-code keys in source or front-end code; they are injected via environment variables on
+the server. On the user device, we only store short-lived session tokens and never the raw crypto
+keys.
+*   **Environment Separation**: We maintain distinct keys and credentials for development, staging,
+and production environments . For instance, Binance offers a testnet API – our dev bot uses
+those keys so that testing trades hit a sandbox. In production, live trading keys are only provided
+after user verification. Each environment’s keys are isolated and rotated independently.
+*   **Least Privilege**: Exchange API keys are granted minimal permissions. For example, we issue
+separate keys for price-fetch (read-only) versus trade-execution (write). Keys also use IP
+whitelisting where possible. Database roles follow least-privilege: for example, the bot service
+account can read/write user data, but the frontend client uses limited-scope JWTs that only allow
+viewing the user’s own records.
+*   **Key Rotation & Audit**: We enforce periodic rotation of secrets (e.g. every 90 days or on team
+changes) . A compromised key can be revoked and replaced instantly. All actions involving
+keys (logins, tool calls) are logged with full audit trails. The system logs user requests and the
+bot’s actions (orders placed, data fetched) with timestamps to support post-incident review .
+*   **Secure Tool Calls**: By design, the LLM cannot access keys directly. The LangChain agent (or
+OpenAI function interface) strictly limits the model to invoking only our predefined tools .
+Even if a user inputs a malicious prompt (e.g. “ignore rules and drain the wallet”), the system’s
+guardrails   –   including   the   prompt   template,   no   direct   shell   execution,   and   mandatory
+confirmations – prevent arbitrary actions . Sensitive actions like  place_order  require a
+second prompt confirmation if above a threshold. We also use Snyk (or similar) to continuously
+scan our codebase and Docker images for vulnerabilities.
+*   **Data Protection**: All network traffic is encrypted (HTTPS/TLS for API calls). We use JWT with short
+expiry for user sessions. Database columns holding personal info are encrypted at rest. Static
+analysis   and   AWS   Inspector   ensure   no   secrets   leak   into   repositories.   Following   OWASP
+guidelines, we sanitize all user inputs and maintain strict CORS policies. Monitoring tools alert on
+suspicious patterns (e.g. rapid failed order attempts or unknown IP accesses). In summary, our
+key management aligns with industry best practices: use secure vaults, rotate often, enforce
+RBAC, and audit continuously .
 
 ## Threat Modeling (STRIDE)
 
@@ -45,8 +61,3 @@ We apply the STRIDE model to identify and mitigate threats:
 ## LLM Safety
 
 The AI assistant is guided to perform analysis only—it “reasons” and suggests trades but requires explicit user sign-off. We strictly sanitize user inputs in prompts and disable open-ended code execution. The function-calling interface itself prevents the LLM from inventing unauthorized actions.
-
-## Compliance
-
-*   **Audit Logs**: If deployed commercially, we will add KYC/AML controls. The detailed, immutable `audit_logs` are designed to support compliance and regulatory requests.
-*   **GDPR/Regional Laws**: For EU users, we will ensure GDPR compliance (PII controls, data subject rights). The architecture is designed to be adaptable to regional data residency requirements.

@@ -4,11 +4,40 @@ This document outlines the system architecture for CryptoPulse AI, designed to b
 
 ## System Architecture Overview
 
-CryptoPulse AI uses a hybrid Python–TypeScript stack to combine the strengths of each ecosystem.
+The system has three layers: 
 
-The **backend** is a Python/FastAPI server that hosts LangChain-based LLM agents. These agents leverage Google’s Gemini (GenAI) as the primary LLM and fall back to alternative models via OpenRouter/Ollama if needed. They implement reasoning chains and tool usage: for example, one tool calls the Binance API for market data or order execution, another retrieves charts. LangChain facilitates orchestrating these tools, enabling the agent to answer queries, analyze portfolios, and propose trades. This design follows current best practices – similar architectures have been proposed in academic and industry work. The agent can stream responses and state via WebSockets for responsiveness. In line with robust design, CryptoPulse AI’s backend uses **streaming APIs (WebSockets)** for market data wherever possible, with REST fallback on failures. It also implements **auto-retry and error handling**: a production-quality trading bot must “keep running despite Internet or exchange disruptions”, tracking order state and retrying failed calls.
+*   **Frontend (TypeScript/React)**: A chat/dash- board UI (browser or mobile app) where users speak
+or type commands, see text responses, and view charts or alerts. We use React (or Next.js) for
+performance and flexibility. The UI supports voice I/O (via Web Audio and Text-to-Speech), a
+conversation view, and embeds images (charts) in chat. For rapid prototyping we might start
+with Gradio/Streamlit, but production uses React or React Native . 
+*   **Backend (Python FastAPI + LangChain)**: A FastAPI server handles API requests from the
+frontend and runs the AI agent. FastAPI is chosen for its high performance and type-checked
+request/response models . We containerize the backend (Docker) for scalability. A LangChain-
+based agent (using an   AgentExecutor ) acts as the “brain” – it routes user intents to
+specialized tools in a secure, sandboxed manner . Each tool is a Python function (wrapped for
+LangChain)   –   for   example,   get_price() ,   place_order() ,   generate_chart() ,   or
+retrieve_news() . The agent loops: the LLM core interprets a query and may output a
+function call (e.g.  PlaceOrder("BTCUSDT", "BUY", 0.1) ) . The AgentExecutor executes
 
-The **frontend** is a React/Vite app written in TypeScript. This provides the user interface for chats, charts, and dashboards. We chose TS/JavaScript for the UI (and optionally for serverless widgets) because, as others have noted, “TypeScript simplifies project maintenance with its type system” and works seamlessly in both front and backend development. The UI handles user authentication (via Supabase Auth), account linking, and displays analysis results and trade suggestions. It also allows manual approval of trades. By default, each AI-suggested order appears in a “pending” queue for user confirmation (ensuring regulatory compliance). Advanced users can enable an “autonomous mode” toggle to allow vetted strategies to execute without per-order prompts, with an emergency kill-switch always available. All API calls (e.g. creating orders on Binance, retrieving CoinGecko prices) go through the FastAPI backend, so secret keys never flow to the browser.
+that call (after any needed confirmation) and returns results to the LLM for final response
+generation. This “ReAct” loop (thinking → tool call → observation → answer) is managed by
+LangChain . 
+*   **Data & Services**: External APIs provide market data and execution. We integrate major
+exchanges via their REST/WebSocket APIs (e.g. Binance, Coinbase). Using a unified library like
+CCXT simplifies multi-exchange support (CCXT wraps Binance/Coinbase endpoints for price fetch
+and order placement) . For example, CCXT’s  exchange.fetch_ticker("ETH/USDT")
+or  exchange.create_order(...)  can be called from our tools . We also ingest data from
+providers like CoinGecko or CryptoCompare for price histories, and news/sentiment APIs (e.g.
+Twitter, CoinDesk headlines) to gauge market mood. Real-time data flows (via WebSockets) and
+historical queries feed the agent. A vector database (e.g. Chroma or Pinecone) may store recent
+news and FAQs – the LLM can do retrieval-augmented generation (RAG) by querying this
+knowledge base . All user accounts and preferences are stored in a secure database (e.g.
+Supabase/Postgres with row-level security); swap secrets like API keys are kept encrypted. 
+
+### MCP Servers
+
+The LangChain AgentExecutor communicates with MCP servers via HTTP calls to perform actions like database queries and UI automation. For more information, see the [Model Context Protocol (MCP) Integration](./mcp-integration.md) guide.
 
 ### Supporting Services and Tools:
 
@@ -25,7 +54,22 @@ Overall, the architecture cleanly separates concerns: the AI agent in Python han
 *   **Trade Execution**: The platform supports fully-automated trading of pre-approved strategies. In practice, the bot will generate trade orders using Binance’s REST API (with HMAC-signed keys). It tracks every order state (open, filled, cancelled) and updates internal context. As Hummingbot engineering advises, the bot “must track what happened to a user’s overall position” and handle partial fills or API errors gracefully. We ensure trades execute at market-leading speed by preferring WebSocket price feeds and only using REST when necessary. Each executed trade is logged and visible in the user dashboard.
 *   **Manual vs Autonomous Modes**: By default, CryptoPulse AI operates in semi-automated mode: the AI proposes orders and displays them for user confirmation. This aligns with regulatory best practices (e.g. MiFID II’s “pre-trade controls” and kill-switch). However, power users can opt into fully autonomous mode once they trust the strategy, allowing the bot to place trades immediately. In either case, a global “panic switch” can halt all trading instantly. (We implement this via a webhook or flag the agent checks before executing any new order.)
 *   **Security & Key Management**: We never store exchange API secrets in plaintext or source code. Instead, keys are saved encrypted (e.g. using Fly.io secrets or a KMS). Even during runtime, secrets are loaded only into environment variables, not logged. In line with best practices, embedding keys in code or .env files is avoided. We plan to use a cloud KMS (e.g. AWS KMS or HashiCorp Vault) to store these keys and decrypt them at use-time. Similarly, user passwords and tokens are hashed and managed by Supabase Auth. All web traffic is HTTPS, and the backend enforces RBAC via JWTs. We also scan dependencies with Snyk to catch vulnerabilities early.
-*   **Deployment, Scalability, and Compliance**: We target a global rollout with attention to regional requirements. The Fly.io deployment can spawn instances in multiple regions (North America, EU, Asia, Africa). For performance and compliance, we can enable region-specific hosting so that data of EU users remains in EU clouds, etc. Supabase also offers multi-region deployments for data residency. Legal/regulatory constraints vary by jurisdiction. In the US, crypto trading bots must obey SEC/CFTC rules and often require user disclaimers and risk warnings. The U.S. regulators emphasize anti-manipulation and proper supervision of algorithmic systems. In the EU, MiFID II explicitly requires pre-trade testing and a kill switch for algorithmic trading, and the upcoming EU AI Act will impose stringent rules on high-risk AI (likely including trading bots). In practice, we ensure CryptoPulse’s design can meet these: e.g. all automated strategies can be audited, and the manual-override satisfies the “human-in-the-loop” expectations. For each launch region (U.S., EU, UK, South Africa, etc.), we document necessary compliance steps (KYC, tax reporting, disclaimers). As regulators globally take “different philosophical approaches”, we remain flexible: U.S./UK releases might require registration as an investment adviser or robust AML checks, while other regions may have simpler crypto-exchange licensing.
+## Deployment, Scalability, and Compliance
+We target a global rollout with attention to regional requirements. The Fly.io deployment can spawn
+instances in multiple regions (North America, EU, Asia, Africa). For performance and compliance, we can
+enable region-specific hosting so that data of EU users remains in EU clouds, etc. Supabase also offers
+multi-region deployments for data residency. 
+Legal/regulatory constraints vary by jurisdiction . In the US, crypto trading bots must obey SEC/
+CFTC rules and often require user disclaimers and risk warnings . The U.S. regulators emphasize
+anti-manipulation and proper supervision of algorithmic systems . In the EU, MiFID II explicitly
+requires pre-trade testing and a kill switch for algorithmic trading , and the upcoming EU AI Act will
+impose stringent rules on high-risk AI (likely including trading bots) . In practice, we ensure
+CryptoPulse’s design can meet these: e.g. all automated strategies can be audited, and the manual-
+override satisfies the “human-in-the-loop” expectations. For each launch region (U.S., EU, UK, South
+Africa, etc.), we document necessary compliance steps (KYC, tax reporting, disclaimers). As regulators
+globally take “different philosophical approaches” , we remain flexible: U.S./UK releases might
+require registration as an investment adviser or robust AML checks, while other regions may have
+simpler crypto-exchange licensing.
 
 ## Architecture Diagram
 
@@ -48,15 +92,17 @@ Overall, the architecture cleanly separates concerns: the AI agent in Python han
 |  |      AI Chat Agent          |  |  |          Postgres Database              | |
 |  |    (LangChain / Gemini)     |  |  | (Users, Trades, Logs, Embeddings)       | |
 |  +-----------------------------+  |  +-----------------------------------------+ |
-|                                     |                                              |
-|  +-----------------------------+  |  +-----------------------------------------+ |
-|  |   Market Data Services      |  |  |              Auth (GoTrue)              | |
-|  | (CoinGecko / CryptoCompare) |  |  |        (JWT / RLS Policies)             | |
-|  +-----------------------------+  |  +-----------------------------------------+ |
-|                                     |                                              |
-|  +-----------------------------+  |  +-----------------------------------------+ |
-|  |     Exchange Interface      |  |  |            Realtime Engine              | |
-|  |          (CCXT)             |  |  | (WebSockets for live updates)           | |
+|  |      MCP Servers            |  |  +-----------------------------------------+ |
+|  | (Supabase, Playwright, etc.)|  |  |              Auth (GoTrue)              | |
+|  +-----------------------------+  |  |        (JWT / RLS Policies)             | |
+|                                     |  +-----------------------------------------+ |
+|  +-----------------------------+  |  |            Realtime Engine              | |
+|  |   Market Data Services      |  |  | (WebSockets for live updates)           | |
+|  | (CoinGecko / CryptoCompare) |  |  +-----------------------------------------+ |
+|  +-----------------------------+  |                                              |
+|                                     |  +-----------------------------------------+ |
+|  +-----------------------------+  |  |     Exchange Interface      | |
+|  |          (CCXT)             |  |  |          (CCXT)             | |
 |  +-----------------------------+  |  +-----------------------------------------+ |
 |                                     |                                              |
 +-------------------------------------+----------------------------------------------+

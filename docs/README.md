@@ -17,11 +17,18 @@ If you're new to the project, here's how to get started:
 *   **[Security](./concepts/security.md)**: An overview of the security measures and threat model.
 *   **[AI Agent Design](./concepts/agent-design.md)**: The design of the LangChain-powered AI agents.
 *   **[Competitive Analysis](./concepts/competitive-analysis.md)**: An analysis of similar platforms in the market.
+*   **[Revenue Model](./concepts/revenue-model.md)**: Our business model and monetization strategy.
+*   **[Database Schema](./concepts/database-schema.md)**: A detailed overview of the database schema.
+*   **[MCP Integration](./concepts/mcp-integration.md)**: An overview of the Model Context Protocol integration.
 
 ### Guides
 
+*   **[Implementation Guide](./guides/implementation-guide.md)**: A step-by-step guide to implementing the project.
+*   **[Deployment and Scaling](./guides/deployment-and-scaling.md)**: How to deploy and scale the application.
+*   **[CI/CD Pipeline](./guides/cicd-pipeline.md)**: An overview of our CI/CD pipeline.
 *   **[Coinbase Integration](./guides/coinbase-integration.md)**: A guide to integrating Coinbase into the platform.
 *   **[Roadmap & Contributing](./guides/roadmap-and-contributing.md)**: The project roadmap and guidelines for contributing.
+*   **[Zod Data Validation](./guides/zod-validation.md)**: How we use Zod for data validation.
 
 ### API Reference
 

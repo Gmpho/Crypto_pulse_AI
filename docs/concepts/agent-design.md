@@ -6,34 +6,27 @@ This document covers the design of the LangChain-powered AI agents in CryptoPuls
 
 We use LangChain’s `AgentExecutor` to provide the LLM with a set of tools it can use to perform actions. The agent can decide which tool to call at each step of its reasoning process.
 
-For example, if a user asks, *“What’s a good entry for BTC today?”*, the agent might first call `get_price("BTC/USDT")` to get the current price, then use that information to formulate a response.
+This “ReAct” loop (thinking → tool call → observation → answer) is managed by LangChain. When the LLM suggests a tool, the agent code executes it and feeds the result back. In production, we incorporate OpenAI’s function-calling natively (passing JSON schemas for each function) to achieve a similar effect. Memory and multi-step reasoning (“chain-of-thought”) ensure the agent can handle complex queries (e.g. multi-coin comparisons or conditional orders) by iterating through tools.
 
 ### Tool Definition Example
 
 Here is how we define tools for the agent:
 
 ```python
-def get_price(symbol: str) -> str:
-    price = exchange.fetch_ticker(symbol)['last']
-    return f"The price of {symbol} is {price} USD"
+from langchain.agents import initialize_agent, Tool
+from langchain.llms import OpenAI
 
-def place_order(symbol: str, side: str, amount: float) -> str:
-    order = exchange.create_order(symbol, 'market', side.lower(), amount)
-    return f"Executed {side} order for {amount} {symbol}: ID {order['id']}"
+def get_price(symbol): ... # calls CCXT
+def place_order(symbol, side, amount): ... # uses Binance API
 
 tools = [
-    Tool(
-        name="GetPrice",
-        func=get_price,
-        description="Fetches the current price of a cryptocurrency symbol."
-    ),
-    Tool(
-        name="PlaceOrder",
-        func=place_order,
-        description="Places a market order for a given symbol, side, and amount."
-    )
+    Tool(name="GetPrice", func=get_price,
+    description="Get latest price for a symbol"),
+    Tool(name="PlaceOrder", func=place_order, description="Place a market order")
+    # ... more tools ...
 ]
 
+llm = OpenAI(model_name="gpt-4", temperature=0)
 agent = initialize_agent(tools, llm, agent="conversational-react-description", verbose=True)
 ```
 
