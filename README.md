@@ -58,7 +58,11 @@ For a detailed overview of our system architecture, please see our [**Architectu
 
 <p align="center">
   <img src="./docs/whole-project-architecture.png" alt="Whole Project Architecture" width="100%">
-  <br>
+</p>
+
+## 📺 Demo
+
+<p align="center">
   <img src="./docs/project-visual-demo.png" alt="Project Visual Demo" width="100%">
 </p>
 
