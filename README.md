@@ -56,7 +56,10 @@ To create a full-stack finance agent platform that uses LLM-based agents to:
 
 For a detailed overview of our system architecture, please see our [**Architecture Documentation**](./docs/concepts/architecture.md).
 
-![Whole Project Architecture](./docs/whole-project-architecture.png)
+<p align="center">
+  ![Whole Project Architecture](./docs/whole-project-architecture.png)
+  ![Project Visual Demo](./docs/project-visual-demo.png)
+</p>
 
 ## 🚀 Getting Started
 
